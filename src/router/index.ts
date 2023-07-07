@@ -31,15 +31,6 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/table.vue'),
             },
             {
-                path: '/tag-mng-pg',
-                name: 'tagManagement',
-                meta: {
-                    title: '标签管理',
-                    permiss: '20',
-                },
-                component: () => import(/* webpackChunkName: "table" */ '../views/TagManagementPage.vue'),
-            },
-            {
                 path: '/charts',
                 name: 'basecharts',
                 meta: {
@@ -160,9 +151,9 @@ router.beforeEach((to, from, next) => {
     const permiss = usePermissStore();
     if (!role && to.path !== '/login') {
         next('/login');
-    // } else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
-    //     // 如果没有权限，则进入403
-    //     next('/403');
+    } else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
+        // 如果没有权限，则进入403
+        next('/403');
     } else {
         next();
     }
