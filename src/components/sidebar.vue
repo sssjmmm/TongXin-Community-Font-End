@@ -99,7 +99,7 @@ const items = [
         subs: [
             {
                 index: '/form',
-                title: '基本表单',
+                title: '编辑帖子',
                 permiss: '5',
             },
             {
