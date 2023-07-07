@@ -132,6 +132,12 @@ const items = [
         title: '权限管理',
         permiss: '13',
     },
+    {
+        icon:'Postcard',
+        index: '/tag-mng-pg',
+        title: '帖子管理',
+        permiss: '1'
+    }
 ];
 
 const route = useRoute();
