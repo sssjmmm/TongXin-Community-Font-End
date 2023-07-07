@@ -2,38 +2,46 @@
     "list": [{
             "id": 1,
             "name": "张三",
-            "money": 123,
-            "address": "广东省东莞市长安镇",
-            "state": "成功",
+            "classify": "学习",
+            "content": "大家好！我对编程很感兴趣，最近在学习Python。我想找一些志同道合的伙伴一起学习和交流。如果你也对编程感兴趣，无论是初学者还是有经验的开发者，都欢迎加入！我们可以一起讨论学习资源、解决问题，甚至组织一些编程挑战。希望能和大家一起进步，互相支持！有兴趣的朋友请私信我，我们来组建一个学习小组吧！",
+            "state": "通过",
             "date": "2019-11-1",
-            "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
+            "thumb": "https://lin-xin.gitee.io/images/post/wms.png",
+            "messageDate":"2023-1-1",
+            "messageTime":"00:12:53"
         },
         {
             "id": 2,
             "name": "李四",
-            "money": 456,
-            "address": "广东省广州市白云区",
-            "state": "成功",
+            "classify": "运动",
+            "content": "大家好！我是一个热爱运动的人，最近想找一些一起运动的伙伴。无论是跑步、健身、打篮球还是其他运动，我都非常热衷！一起运动不仅可以增加动力和乐趣，还能互相激励和交流健身经验。",
+            "state": "未通过",
             "date": "2019-10-11",
-            "thumb": "https://lin-xin.gitee.io/images/post/node3.png"
+            "thumb": "https://lin-xin.gitee.io/images/post/node3.png",
+            "messageDate":"2023-1-1",
+            "messageTime":"03:11:53"
         },
         {
             "id": 3,
             "name": "王五",
-            "money": 789,
-            "address": "湖南省长沙市",
-            "state": "失败",
+            "classify": "约饭",
+            "content": "大家好！我是一个对美食充满热爱的人，最近想找一些一起约饭的伙伴。无论是探索新的餐厅、品尝特色美食还是分享美食心得，我都非常热衷！一起享受美食不仅可以开拓味蕾，还能增进友谊和交流美食文化。",
+            "state": "未审核",
             "date": "2019-11-11",
-            "thumb": "https://lin-xin.gitee.io/images/post/parcel.png"
+            "thumb": "https://lin-xin.gitee.io/images/post/parcel.png",
+            "messageDate":"2023-1-1",
+            "messageTime":"06:16:45"
         },
         {
             "id": 4,
             "name": "赵六",
-            "money": 1011,
-            "address": "福建省厦门市鼓浪屿",
-            "state": "成功",
+            "classify": "K歌",
+            "content": "大家好！我是一个热爱唱歌的人，最近想找一些一起K歌的伙伴。无论是流行歌曲、经典老歌还是其他音乐风格，我都非常喜欢！一起K歌不仅可以释放压力、享受音乐，还能增进友谊和共同的兴趣爱好。",
+            "state": "通过",
             "date": "2019-10-20",
-            "thumb": "https://lin-xin.gitee.io/images/post/notice.png"
+            "thumb": "https://lin-xin.gitee.io/images/post/notice.png",
+            "messageDate":"2023-1-1",
+            "messageTime":"10:23:21"
         }
     ],
     "pageTotal": 4

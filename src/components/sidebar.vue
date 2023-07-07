@@ -70,7 +70,7 @@ const items = [
         subs: [
             {
                 index: '/table',
-                title: '常用表格',
+                title: '帖子审核',
                 permiss: '2',
             },
             {
