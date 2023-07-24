@@ -131,6 +131,8 @@ import { ref, reactive } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Delete, Edit, Search, Plus, User, Refresh, SuccessFilled, CircleCloseFilled } from '@element-plus/icons-vue';
 import { fetchTableData } from '../api/index';
+import txcRequest from '../service/index.js'
+
 
 interface TableItem {
     id: number;
@@ -153,6 +155,7 @@ const query = reactive({
 
 const tableData = ref<TableItem[]>([]);
 const pageTotal = ref(0);
+
 // 获取表格数据
 const getData = () => {
     fetchTableData().then(res => {
@@ -160,11 +163,25 @@ const getData = () => {
         pageTotal.value = res.data.pageTotal || 50;
     });
 };
-getData();
+
+const getData2 = ()=>{
+    txcRequest.request({
+    url: 'test/1',
+    method: 'GET'
+  }).then((res: any) => {
+    tableData.value = res.list;
+    pageTotal.value = res.pageTotal || 50;
+  });
+}
+
+getData2();
+
 // 后端获取帖子
 const pullPosts = () => {
 
 }
+
+
 
 
 // 查询操作

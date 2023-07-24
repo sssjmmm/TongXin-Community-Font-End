@@ -136,7 +136,7 @@ const items = [
         icon:'Postcard',
         index: '/tag-mng-pg',
         title: '帖子管理',
-        permiss: '1'
+        permiss: '13'
     }
 ];
 
