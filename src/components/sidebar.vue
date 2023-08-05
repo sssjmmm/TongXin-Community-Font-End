@@ -99,7 +99,7 @@ const items = [
         subs: [
             {
                 index: '/form',
-                title: '基本表单',
+                title: '编辑帖子',
                 permiss: '5',
             },
             {
@@ -132,6 +132,12 @@ const items = [
         title: '权限管理',
         permiss: '13',
     },
+    {
+        icon:'Postcard',
+        index: '/tag-mng-pg',
+        title: '帖子管理',
+        permiss: '13'
+    }
 ];
 
 const route = useRoute();
