@@ -22,16 +22,16 @@
 				<el-card shadow="hover" style="height: 252px">
 					<template #header>
 						<div class="clearfix">
-							<span>语言详情</span>
+							<span>校区帖子分布</span>
 						</div>
 					</template>
-					Vue
+					四平路校区
 					<el-progress :percentage="79.4" color="#42b983"></el-progress>
-					TypeScript
+					嘉定校区
 					<el-progress :percentage="14" color="#f1e05a"></el-progress>
-					CSS
+					彰武校区
 					<el-progress :percentage="5.6"></el-progress>
-					HTML
+					沪西校区
 					<el-progress :percentage="1" color="#f56c6c"></el-progress>
 				</el-card>
 			</el-col>
@@ -40,7 +40,7 @@
 					<el-col :span="8">
 						<el-card shadow="hover" :body-style="{ padding: '0px' }">
 							<div class="grid-content grid-con-1">
-								<el-icon class="grid-con-icon"><User /></el-icon>
+								<el-icon class="grid-con-icon"><Edit/></el-icon>
 								<div class="grid-cont-right">
 									<div class="grid-num">1234</div>
 									<div>用户访问量</div>
@@ -54,7 +54,7 @@
 								<el-icon class="grid-con-icon"><ChatDotRound /></el-icon>
 								<div class="grid-cont-right">
 									<div class="grid-num">321</div>
-									<div>系统消息</div>
+									<div>帖子总数</div>
 								</div>
 							</div>
 						</el-card>
@@ -62,10 +62,10 @@
 					<el-col :span="8">
 						<el-card shadow="hover" :body-style="{ padding: '0px' }">
 							<div class="grid-content grid-con-3">
-								<el-icon class="grid-con-icon"><Goods /></el-icon>
+								<el-icon class="grid-con-icon"><User /></el-icon>
 								<div class="grid-cont-right">
 									<div class="grid-num">5000</div>
-									<div>商品数量</div>
+									<div>用户总数</div>
 								</div>
 							</div>
 						</el-card>
@@ -120,6 +120,7 @@
 import Schart from 'vue-schart';
 import { reactive } from 'vue';
 import imgurl from '../assets/img/img.jpg';
+import { Search } from '@element-plus/icons-vue/dist/types';
 
 const name = localStorage.getItem('ms_username');
 const role: string = name === 'admin' ? '超级管理员' : '普通用户';
@@ -169,27 +170,27 @@ const options2 = {
 };
 const todoList = reactive([
 	{
-		title: '今天要修复100个bug',
+		title: '审核新用户注册申请，批准合格用户加入社区。',
 		status: false
 	},
 	{
-		title: '今天要修复100个bug',
+		title: '监控社区活动和帖子，确保内容合规和用户体验。',
 		status: false
 	},
 	{
-		title: '今天要写100行代码加几个bug吧',
+		title: '发表系统维护系统公告。',
 		status: false
 	},
 	{
-		title: '今天要修复100个bug',
+		title: '策划和组织社区活动，制定活动方案和日程。',
 		status: false
 	},
 	{
-		title: '今天要修复100个bug',
+		title: '统计社区帖子热度和互动情况，进行数据报告。',
 		status: true
 	},
 	{
-		title: '今天要写100行代码加几个bug吧',
+		title: '解答用户对社区功能的使用疑问。',
 		status: true
 	}
 ]);
