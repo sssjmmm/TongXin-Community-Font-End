@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<!-- 第一行 -->
 		<el-row :gutter="20">
 			<el-col :span="8">
 				<el-card shadow="hover" class="mgb20" style="height: 252px">
@@ -42,7 +43,7 @@
 							<div class="grid-content grid-con-1">
 								<el-icon class="grid-con-icon"><Edit/></el-icon>
 								<div class="grid-cont-right">
-									<div class="grid-num">1234</div>
+									<div class="grid-num">14895</div>
 									<div>用户访问量</div>
 								</div>
 							</div>
@@ -53,7 +54,7 @@
 							<div class="grid-content grid-con-2">
 								<el-icon class="grid-con-icon"><ChatDotRound /></el-icon>
 								<div class="grid-cont-right">
-									<div class="grid-num">321</div>
+									<div class="grid-num">3521</div>
 									<div>帖子总数</div>
 								</div>
 							</div>
@@ -64,13 +65,15 @@
 							<div class="grid-content grid-con-3">
 								<el-icon class="grid-con-icon"><User /></el-icon>
 								<div class="grid-cont-right">
-									<div class="grid-num">5000</div>
+									<div class="grid-num">5234</div>
 									<div>用户总数</div>
 								</div>
 							</div>
 						</el-card>
 					</el-col>
 				</el-row>
+
+				<!-- 待办事项 -->
 				<el-card shadow="hover" style="height: 403px">
 					<template #header>
 						<div class="clearfix">
@@ -101,7 +104,10 @@
 				</el-card>
 			</el-col>
 		</el-row>
+
+		<!-- 第二行 -->
 		<el-row :gutter="20">
+
 			<el-col :span="12">
 				<el-card shadow="hover">
 					<schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
@@ -128,21 +134,23 @@ const role: string = name === 'admin' ? '超级管理员' : '普通用户';
 const options = {
 	type: 'bar',
 	title: {
-		text: '最近一周各品类销售图'
+		text: '最近一周各类帖子发布数量'
 	},
 	xRorate: 25,
 	labels: ['周一', '周二', '周三', '周四', '周五'],
+	  // 改变配色风格
+	colors: ['#ff0000', '#00ff00', '#0000ff'],
 	datasets: [
 		{
-			label: '家电',
+			label: '运动',
 			data: [234, 278, 270, 190, 230]
 		},
 		{
-			label: '百货',
+			label: '约饭',
 			data: [164, 178, 190, 135, 160]
 		},
 		{
-			label: '食品',
+			label: '自修',
 			data: [144, 198, 150, 235, 120]
 		}
 	]
@@ -150,22 +158,23 @@ const options = {
 const options2 = {
 	type: 'line',
 	title: {
-		text: '最近几个月各品类销售趋势图'
+		text: '最近几个月用户总数变化趋势图'
 	},
 	labels: ['6月', '7月', '8月', '9月', '10月'],
+	colors: ['#0000ff'],
 	datasets: [
 		{
-			label: '家电',
-			data: [234, 278, 270, 190, 230]
+			label: '用户',
+			data: [2340, 2480, 2706, 1940, 2330]
 		},
-		{
-			label: '百货',
-			data: [164, 178, 150, 135, 160]
-		},
-		{
-			label: '食品',
-			data: [74, 118, 200, 235, 90]
-		}
+		// {
+		// 	label: '百货',
+		// 	data: [164, 178, 150, 135, 160]
+		// },
+		// {
+		// 	label: '食品',
+		// 	data: [74, 118, 200, 235, 90]
+		// }
 	]
 };
 const todoList = reactive([
