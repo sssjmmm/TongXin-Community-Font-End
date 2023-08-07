@@ -41,7 +41,9 @@
 					<el-col :span="8">
 						<el-card shadow="hover" :body-style="{ padding: '0px' }">
 							<div class="grid-content grid-con-1">
-								<el-icon class="grid-con-icon"><Edit/></el-icon>
+								<el-icon class="grid-con-icon">
+									<Edit />
+								</el-icon>
 								<div class="grid-cont-right">
 									<div class="grid-num">14895</div>
 									<div>用户访问量</div>
@@ -52,7 +54,9 @@
 					<el-col :span="8">
 						<el-card shadow="hover" :body-style="{ padding: '0px' }">
 							<div class="grid-content grid-con-2">
-								<el-icon class="grid-con-icon"><ChatDotRound /></el-icon>
+								<el-icon class="grid-con-icon">
+									<ChatDotRound />
+								</el-icon>
 								<div class="grid-cont-right">
 									<div class="grid-num">3521</div>
 									<div>帖子总数</div>
@@ -63,7 +67,9 @@
 					<el-col :span="8">
 						<el-card shadow="hover" :body-style="{ padding: '0px' }">
 							<div class="grid-content grid-con-3">
-								<el-icon class="grid-con-icon"><User /></el-icon>
+								<el-icon class="grid-con-icon">
+									<User />
+								</el-icon>
 								<div class="grid-cont-right">
 									<div class="grid-num">5234</div>
 									<div>用户总数</div>
@@ -78,7 +84,7 @@
 					<template #header>
 						<div class="clearfix">
 							<span>待办事项</span>
-							<el-button style="float: right; padding: 3px 0" text>添加</el-button>
+							<el-button style="float: right; padding: 3px 0" text @click="showAddTodoDialogfunc">添加</el-button>
 						</div>
 					</template>
 
@@ -90,18 +96,26 @@
 						</el-table-column>
 						<el-table-column>
 							<template #default="scope">
-								<div
-									class="todo-item"
-									:class="{
-										'todo-item-del': scope.row.status
-									}"
-								>
+								<div class="todo-item" :class="{
+									'todo-item-del': scope.row.status
+								}">
 									{{ scope.row.title }}
 								</div>
 							</template>
 						</el-table-column>
 					</el-table>
 				</el-card>
+				<!-- 添加待办事项的弹窗 -->
+				<el-dialog title="添加待办事项" :visible.sync="showAddTodoDialog" @close="handleAddTodoDialogClose">
+					<!-- 在这里添加待办事项的表单 -->
+					<!-- 例如：<el-input v-model="newTodo" placeholder="请输入待办事项"></el-input> -->
+					<!-- 你可以根据需要添加其他表单项，比如截止日期、优先级等 -->
+
+					<span slot="footer" class="dialog-footer">
+						<el-button @click="showAddTodoDialog = false">取 消</el-button>
+						<el-button type="primary" @click="addTodo">确 定</el-button>
+					</span>
+				</el-dialog>
 			</el-col>
 		</el-row>
 
@@ -124,7 +138,7 @@
 
 <script setup lang="ts" name="dashboard">
 import Schart from 'vue-schart';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import imgurl from '../assets/img/img.jpg';
 import { Search } from '@element-plus/icons-vue/dist/types';
 
@@ -138,7 +152,7 @@ const options = {
 	},
 	xRorate: 25,
 	labels: ['周一', '周二', '周三', '周四', '周五'],
-	  // 改变配色风格
+	// 改变配色风格
 	colors: ['#ff0000', '#00ff00', '#0000ff'],
 	datasets: [
 		{
@@ -177,6 +191,7 @@ const options2 = {
 		// }
 	]
 };
+
 const todoList = reactive([
 	{
 		title: '审核新用户注册申请，批准合格用户加入社区。',
@@ -203,6 +218,25 @@ const todoList = reactive([
 		status: true
 	}
 ]);
+const showAddTodoDialog = ref(false); // 控制添加待办事项弹窗的显示
+// 点击“添加”按钮，打开添加待办事项的弹窗
+const showAddTodoDialogfunc=()=> {
+      showAddTodoDialog.value = true;
+	  console.log(1);
+};
+const handleAddTodoDialogClose = () => {
+	// 关闭添加待办事项弹窗后的逻辑处理
+	showAddTodoDialog.value = false;
+};
+
+const addTodo = () => {
+	// 处理添加待办事项的逻辑
+	// 例如，将新的待办事项内容（this.newTodo）添加到待办事项列表（this.todoList）
+
+	// 添加完成后关闭弹窗
+	showAddTodoDialog.value = false;
+};
+
 </script>
 
 <style scoped>
