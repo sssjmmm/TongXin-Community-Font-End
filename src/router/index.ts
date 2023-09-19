@@ -40,6 +40,15 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/TagManagementPage.vue'),
             },
             {
+                path: '/user-mng-pg',
+                name: 'userManagement',
+                meta: {
+                    title: '用户管理',
+                    permiss: '20',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/UserManagementPage.vue'),
+            },
+            {
                 path: '/charts',
                 name: 'basecharts',
                 meta: {
