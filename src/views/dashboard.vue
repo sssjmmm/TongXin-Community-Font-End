@@ -25,21 +25,20 @@
 						<span>上海</span>
 					</div>
 				</el-card>
-				<el-card shadow="hover" style="height: 252px">
+
+				<el-card shadow="hover" style="height: 252px" >
 					<template #header>
 						<div class="clearfix">
-							<span>校区帖子分布</span>
+						<span>校区帖子分布</span>
 						</div>
 					</template>
-					四平路校区
-					<el-progress :percentage="79.4" color="#42b983"></el-progress>
-					嘉定校区
-					<el-progress :percentage="14" color="#f1e05a"></el-progress>
-					彰武校区
-					<el-progress :percentage="5.6"></el-progress>
-					沪西校区
-					<el-progress :percentage="1" color="#f56c6c"></el-progress>
+					<div v-for="campus in campusData" :key="campus.category1_name">
+						<span>{{ campus.category1_name }}</span>
+						<el-progress :percentage="(campus.num / totalNum * 100).toFixed(2)" :color="getProgressColor(campus.category1_name)"></el-progress>
+					</div>
+				
 				</el-card>
+
 			</el-col>
 			<el-col :span="16">
 				<el-row :gutter="20" class="mgb20">
@@ -76,7 +75,7 @@
 									<User />
 								</el-icon>
 								<div class="grid-cont-right">
-									<div class="grid-num">5234</div>
+									<div class="grid-num">{{AllUserCount}}</div>
 									<div>用户总数</div>
 								</div>
 							</div>
@@ -140,112 +139,108 @@
 		<!-- 第二行 -->
 		<el-row :gutter="20">
 			<el-col :span="12">
-				<el-card shadow="hover">
-					<schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
+				<el-card shadow="hover" style="height: 340px">
+				<template #header>
+					<div class="clearfix">
+					<span>近一周一级目录帖子数量</span>
+					</div>
+				</template>
+				<el-scrollbar style="height: 250px;">
+					<div class="category-info" v-for="(item, index) in category1Data" :key="index">
+					<div class="category-name">{{ item.category1_name }}</div>
+					<div class="category-num">{{ item.num }}</div>
+					</div>
+				</el-scrollbar>
 				</el-card>
 			</el-col>
 			<el-col :span="12">
-				<el-card shadow="hover">
-					<schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
+				<el-card shadow="hover" style="height: 340px">
+					<!-- <schart ref="line" class="schart" canvasId="line" :options="options2"></schart> -->
+				<template #header>
+					<div class="clearfix">
+					<span>近一周二级目录帖子数量</span>
+					</div>
+				</template>
+				<el-scrollbar style="height: 250px;">
+					<div class="category-info" v-for="(item, index) in category2Data" :key="index">
+					<div class="category-name">{{ item.category2_name }}</div>
+					<div class="category-num">{{ item.num }}</div>
+					</div>
+				</el-scrollbar>
 				</el-card>
 			</el-col>
 		</el-row>
 	</div>
+	<el-button @click="testData()">test</el-button>
 </template>
 
 <script>
 import Schart from 'vue-schart'
 // import {imgurl} from '../assets/img/img.jpg';
 import { Search } from '@element-plus/icons-vue';
+import axios from 'axios';
 
 export default {
   data() {
     return {
+	  manager_id: 1, // 管理员id，默认为1，之后需要从登录获得
+	  AllUserCount: null, // 用户总数
 	  imgurl: '../assets/img/img.jpg',
       name: localStorage.getItem('ms_username'),
       role: this.name === 'admin' ? '超级管理员' : '普通用户',
-      options: {
-        type: 'bar',
-        title: {
-          text: '最近一周各类帖子发布数量'
-        },
-        xRorate: 25,
-        labels: ['周一', '周二', '周三', '周四', '周五'],
-        colors: ['#ff0000', '#00ff00', '#0000ff'],
-        datasets: [
-          {
-            label: '运动',
-            data: [234, 278, 270, 190, 230]
-          },
-          {
-            label: '约饭',
-            data: [164, 178, 190, 135, 160]
-          },
-          {
-            label: '自修',
-            data: [144, 198, 150, 235, 120]
-          }
-        ]
-      },
-      options2: {
-        type: 'line',
-        title: {
-          text: '最近几个月用户总数变化趋势图'
-        },
-        labels: ['6月', '7月', '8月', '9月', '10月'],
-        colors: ['#0000ff'],
-        datasets: [
-          {
-            label: '用户',
-            data: [2340, 2480, 2706, 1940, 2330]
-          }
-		// {
-		// 	label: '百货',
-		// 	data: [164, 178, 150, 135, 160]
-		// },
-		// {
-		// 	label: '食品',
-		// 	data: [74, 118, 200, 235, 90]
-		// }
-        ]
-      },
-      todoList: [
-        {
-          title: '审核新用户注册申请，批准合格用户加入社区。',
-          status: false
-        },
-        {
-          title: '监控社区活动和帖子，确保内容合规和用户体验。',
-          status: false
-        },
-        {
-          title: '发表系统维护系统公告。',
-          status: false
-        },
-        {
-          title: '策划和组织社区活动，制定活动方案和日程。',
-          status: false
-        },
-        {
-          title: '统计社区帖子热度和互动情况，进行数据报告。',
-          status: false
-        },
-        {
-          title: '解答用户对社区功能的使用疑问。',
-          status: true
-        },        
-		{
-          title: '测试新接口。',
-          status: true
-        },
-
-      ],
+	  campusData: [], // 各个校区的帖子数量
+    //   options: {
+    //     type: 'bar',
+    //     title: {
+    //       text: '最近一周各类帖子发布数量'
+    //     },
+    //     xRorate: 25,
+    //     labels: ['周一', '周二', '周三', '周四', '周五'],
+    //     colors: ['#ff0000', '#00ff00', '#0000ff'],
+    //     datasets: [
+    //       {
+    //         label: '运动',
+    //         data: [234, 278, 270, 190, 230]
+    //       },
+    //       {
+    //         label: '约饭',
+    //         data: [164, 178, 190, 135, 160]
+    //       },
+    //       {
+    //         label: '自修',
+    //         data: [144, 198, 150, 235, 120]
+    //       }
+    //     ]
+    //   },
+    //   options2: {
+    //     type: 'line',
+    //     title: {
+    //       text: '最近几个月用户总数变化趋势图'
+    //     },
+    //     labels: ['6月', '7月', '8月', '9月', '10月'],
+    //     colors: ['#0000ff'],
+    //     datasets: [
+    //       {
+    //         label: '用户',
+    //         data: [2340, 2480, 2706, 1940, 2330]
+    //       }
+	// 	// {
+	// 	// 	label: '百货',
+	// 	// 	data: [164, 178, 150, 135, 160]
+	// 	// },
+	// 	// {
+	// 	// 	label: '食品',
+	// 	// 	data: [74, 118, 200, 235, 90]
+	// 	// }
+    //     ]
+    //   },
+      todoList: [], // 该管理员的所有待办事项
       showAddTodoDialog: false,
-
+	  category1Data: [], // 一级目录信息
+	  category2Data: [], // 二级目录信息
 	  pagedTodoList: [], // 当前页的待办事项数据
       currentPage: 1, // 当前页码
       pageSize: 5, // 每页显示的条目数
-
 	  newTodo: '',//新增的一条待办事项
     };
   },
@@ -253,6 +248,24 @@ export default {
     Schart
   },
   methods: {
+	async testData() {
+		console.log("start test!");
+		try {
+			console.log("start test2!");
+			await axios.get(`https://tongxinshequ.cn/manage/homepage/allTypesBaike`)
+			.then((response) => {
+				// 请求成功时的处理
+				this.category1Data = response.data.category1_result;
+				this.category2Data = response.data.category2_result;
+			})
+			.catch((error) => {
+				// 请求失败时的处理
+				console.error('Error:', error);
+			});
+		} catch (error) {
+			this.error = error;
+      }
+    },
 	// 点击“添加”按钮，打开添加待办事项的弹窗
     showAddTodoDialogfunc() {
       this.showAddTodoDialog = true;
@@ -297,18 +310,105 @@ export default {
     },
 
     // 更新当前页的待办事项数据
-    updatePagedTodoList() {
+    async updatePagedTodoList() {
 		console.log("updatePagedTodoList");
       const startIndex = (this.currentPage - 1) * this.pageSize;
       const endIndex = startIndex + this.pageSize;
+	  console.log('ssss', this.todoList);
       this.pagedTodoList = this.todoList.slice(startIndex, endIndex);
     },
+	// 获取用户总量
+	async getAllUserCount() {
+		try {
+			await axios.get('https://tongxinshequ.cn/manage/homepage/getAllUserCount')
+			.then((response) => {
+				this.AllUserCount = response.data.totalUserNum;
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+		} catch (error) {
+			this.error = error;
+      }
+    },
+	// 获取待办事项列表
+	async getToDoListData() {
+		try {
+			console.log("start test2!");
+			await axios.get(`https://tongxinshequ.cn/manage/homepage/getToDoList/?mid=${this.manager_id}`)
+			.then((response) => {
+				// console.log('Data:', response.data.todoList);
+				this.todoList = response.data.todoList;
+				console.log('todolist data is', this.todoList);
+			})
+			.catch((error) => {
+				// 请求失败时的处理
+				console.error('Error:', error);
+			});
+		} catch (error) {
+			this.error = error;
+      }
+    },
+	// 获取近一周各个校区帖子数
+	async getCampusData() {
+		try {
+			await axios.get(`https://tongxinshequ.cn/manage/homepage/allCampusBaike`)
+			.then((response) => {
+				// 请求成功时的处理
+				this.campusData = response.data.campus_result;
+			})
+			.catch((error) => {
+				// 请求失败时的处理
+				console.error('Error:', error);
+			});
+		} catch (error) {
+			this.error = error;
+      }
+    },
+	// 根据校区名称返回不同的进度条颜色
+	getProgressColor(category) {  
+      if (category === "嘉定校区") {
+        return "#42b983"; // 绿色
+      } else if (category === "四平路校区") {
+        return "#f1e05a"; // 黄色
+      } else if(category === "沪西校区") {
+		return "#f56c6c"; // 红色
+	  }
+      // 可以根据需要添加更多校区颜色的判断
+      return "#ccc"; // 默认颜色 灰色
+    },
+	async getCategoryData() {
+		try {
+			await axios.get(`https://tongxinshequ.cn/manage/homepage/allTypesBaike`)
+			.then((response) => {
+				// 请求成功时的处理
+				this.category1Data = response.data.category1_result;
+				this.category2Data = response.data.category2_result;
+			})
+			.catch((error) => {
+				// 请求失败时的处理
+				console.error('Error:', error);
+			});
+		} catch (error) {
+			this.error = error;
+      }
+    },
+	async init(){
+		await this.getToDoListData();
+    	await this.updatePagedTodoList();
+    	await this.getAllUserCount();
+		await this.getCampusData();
+		await this.getCategoryData();
+	}
+  },
+  computed: {
+	// 所有校区近一周帖子总数
+    totalNum() {
+      return this.campusData.reduce((total, campus) => total + campus.num, 0);
+	}
   },
   created() {
-    // 这里可以获取和设置待办事项数据，例如从后端API获取数据
-    // 然后在获取数据后，调用updatePagedTodoList()方法初始化第一页的数据
-    // 示例：this.todoList = 获取的待办事项数据;
-    this.updatePagedTodoList();
+	this.init();
   },
 };
 </script>
@@ -422,5 +522,22 @@ export default {
 	left: 0;
 	width: 100%;
 
+}
+
+.category-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.category-name {
+  font-size: 18px;
+  color: #333;
+}
+
+.category-num {
+  font-size: 20px;
+  color: #42b983; /* 你可以自定义颜色 */
 }
 </style>
