@@ -196,6 +196,7 @@
             <el-button v-if="editFlag === true" style="position: relative;left: 66.6%;transform: translateX(-50%);" @click="editFlag = false">取消</el-button>
         </el-dialog>
     </div>
+    <button @click="func()">test</button>
 </template>
 
 <script setup lang="ts" name="basetable">
@@ -205,7 +206,18 @@ import { Delete, Edit, Search, Plus, User, Refresh, SuccessFilled, CircleCloseFi
 import { fetchTableData } from '../api/index';
 import txcRequest from '../service/index.js';
 import searchbar from '../components/searchbar.vue';
+import axios from "axios";
 
+// 请求本地mock数据
+const func = () => {
+    console.log("start test");
+    axios({
+            method:"get",
+			url:"/mock/home.json",
+		}).then((resp) => {
+			console.log(resp.data.list[0]);
+		     })
+}
 // 表格中的项目
 interface TableItem {
     id: number;              // 用户ID

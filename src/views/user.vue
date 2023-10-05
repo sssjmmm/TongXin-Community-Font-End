@@ -16,7 +16,8 @@
 							</span>
 						</div>
 						<div class="info-name">{{ name }}</div>
-						<div class="info-desc">不可能！我的代码怎么可能会有bug！</div>
+						<div class="info-school">{{ form.school }}</div>
+						<div class="info-desc">个人简介：{{ form.desc }}</div>
 					</div>
 				</el-card>
 			</el-col>
@@ -35,6 +36,16 @@
 						<el-form-item label="新密码：">
 							<el-input type="password" v-model="form.new"></el-input>
 						</el-form-item>
+						<el-form-item label="学校(校区):">
+							<el-input v-model="form.school"></el-input>
+						</el-form-item>
+						<el-form-item label="用户角色：" prop="role">
+                    		<el-select v-model="form.role" placeholder="请选择">
+                        		<el-option key="老师" label="老师" value="老师"></el-option>
+                        		<el-option key="学生" label="学生" value="学生"></el-option>
+                        		<el-option key="其他" label="其他" value="其他"></el-option>
+                    		</el-select>
+                		</el-form-item>
 						<el-form-item label="个人简介：">
 							<el-input v-model="form.desc"></el-input>
 						</el-form-item>
@@ -78,7 +89,9 @@ const name = localStorage.getItem('ms_username');
 const form = reactive({
 	old: '',
 	new: '',
-	desc: '不可能！我的代码怎么可能会有bug！'
+	desc: '',
+	school: '',
+	role: ''
 });
 const onSubmit = () => {};
 
@@ -156,6 +169,12 @@ const saveAvatar = () => {
 .info-name {
 	margin: 15px 0 10px;
 	font-size: 24px;
+	font-weight: 500;
+	color: #262626;
+}
+.info-school {
+	margin: 15px 0 10px;
+	font-size: 16px;
 	font-weight: 500;
 	color: #262626;
 }
