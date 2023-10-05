@@ -2,8 +2,24 @@
     <div>
         <div class="container">
             <div class="handle-box">
-                <searchbar @search="performSearch"/>
-                <el-button type="" :icon="Refresh" @click="pullPosts">刷新</el-button>
+                <el-select v-model="queryStatus" style="flex: 2">
+                    <el-option key="1" label="待审核" value="待审核" @click="getNewStatusPosts(0)"></el-option>
+                    <el-option key="2" label="已通过" value="已通过" @click="getNewStatusPosts(0)"></el-option>
+                    <el-option key="3" label="未通过" value="未通过" @click="getNewStatusPosts(0)"></el-option>
+                </el-select>
+                <el-select v-model="query.type" placeholder="查找方式" style="flex:2">
+                    <el-option key="1" label="日期" value="日期"></el-option>
+                    <el-option key="2" label="帖子内容" value="帖子内容"></el-option>
+                    <el-option key="3" label="一级目录" value="一级目录"></el-option>
+                    <el-option key="4" label="二级目录" value="二级目录"></el-option>
+                    <el-option key="5" label="校区" value="校区"></el-option>
+                    <el-option key="6" label="标题" value="标题"></el-option>
+                    <el-option key="7" label="用户id" value="用户id"></el-option>
+                </el-select>
+                <el-input v-model="query.content" style="flex: 10"></el-input>
+                <el-button type="" :icon="Search" @click="performSearch" style="flex: 1">搜索</el-button>
+                <el-button type="" :icon="Clock" @click="resetSearch" style="flex: 1;margin-left: 0;">重置</el-button>
+                <el-button type="" :icon="Refresh" @click="pullPosts" style="flex: 1;margin-left: 0;">刷新</el-button>
             </div>
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
                 <el-table-column prop="id" label="ID" width="100" align="center"></el-table-column>
@@ -11,8 +27,9 @@
                 <el-table-column prop="status" width="130" label="状态" align='center'>
                     <template #default="scope">
                         <el-tag
-                            :type="scope.row.status === '通过' ? 'success' : (scope.row.status === '待审核' ? 'info' : (scope.row.status === '不通过' ? 'danger' : ''))">
-                            {{ scope.row.status }}
+                            :type="scope.row.status === 1 ? 'success' : (scope.row.status === 0 ? 'info' : (scope.row.status === 2 ? 'danger' : ''))">
+                            {{ scope.row.status === 1 ? '通过' : (scope.row.status === 0 ? '待审核' : (scope.row.status === 2 ?
+                                '不通过' : '')) }}
                         </el-tag>
                     </template>
                 </el-table-column>
@@ -24,8 +41,6 @@
                         </div>
                     </template>
                 </el-table-column>
-
-
                 <el-table-column prop="content" label="内容" width="300" align="center"
                     :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="category1" label="一级目录" align="center">
@@ -41,27 +56,32 @@
                 <el-table-column prop="createtime" label="发布时间" align="center"></el-table-column>
                 <el-table-column prop="status" label="操作" width="220" align="center">
                     <template #default="scope">
-                        <el-button text :icon="Edit" @click="handleEdit(scope.$index, scope.row)"
-                            v-if="scope.row.status === '通过'" v-permiss="15">
-                            编辑
-                        </el-button>
-                        <el-button class="green" :icon="SuccessFilled" v-if="scope.row.status === '待审核'" text>
+                        <el-button class="green" :icon="SuccessFilled" v-if="scope.row.status === 0" text
+                            @click="modifyStatus(1, scope.row)" style="margin-left: 0;">
                             通过
                         </el-button>
-                        <el-button class="red" :icon="CircleCloseFilled" v-if="scope.row.status === '待审核'" text>
+
+                        <el-button class="red" :icon="CircleCloseFilled" v-if="scope.row.status === 0" text
+                            @click="modifyStatus(2, scope.row)" style="margin-left: 0;">
                             不通过
                         </el-button>
 
-                        <el-button class="red" :icon="CircleCloseFilled" v-if="scope.row.status === '通过'" text>
+                        <el-button class="red" :icon="CircleCloseFilled" v-if="scope.row.status === 1" text
+                            @click="modifyStatus(2, scope.row)" style="margin-left: 0;">
                             驳回
                         </el-button>
 
-                        <el-button class="green" :icon="SuccessFilled" v-if="scope.row.status === '不通过'" text>
+                        <el-button class="green" :icon="SuccessFilled" v-if="scope.row.status === 2" text
+                            @click="modifyStatus(1, scope.row)" style="margin-left: 0;">
                             重新通过
+                        </el-button>
+
+                        <el-button class="blue" :icon="Document" text @click="showMoreInfo(scope.row)" style="margin-left: 0;">
+                            详情
                         </el-button>
                     </template>
                 </el-table-column>
-
+                <!-- 
                 <el-table-column prop="campus"  label="校区" align="center">
                 </el-table-column>
                 <el-table-column prop="likenum"  label="点赞量" align="center">
@@ -69,72 +89,119 @@
                 <el-table-column prop="collectnum"  label="收藏量" align="center">
                 </el-table-column>
                 <el-table-column prop="readingnum" label="阅读量" align="center">
-                </el-table-column>
+                </el-table-column> -->
             </el-table>
             <div class="pagination">
-                <!--⭐ 需要修改 -->
                 <el-pagination background layout="total, prev, pager, next" :current-page="query.pageIndex"
                     :page-size="query.pageSize" :total="pageTotal" @current-change="handlePageChange"></el-pagination>
             </div>
         </div>
-
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" v-model="editVisible" width="30%">
-            <el-form label-width="100px">
-                <el-form-item label="用户ID">
-                    {{ form.id }}
-                </el-form-item>
-                <el-form-item label="内容">
-                    <el-input type="textarea" rows="10" v-model="form.content"></el-input>
-                </el-form-item>
-                <el-form-item label="指定点赞数量">
-                    <el-select v-model="likeNumber" class="handle-select mr10">
-                        <el-option key="1" label="不限" value="不限"></el-option>
-                        <el-option key="7" label="不允许点赞" value="不允许点赞"></el-option>
-                        <el-option key="2" label="10" value="10"></el-option>
-                        <el-option key="3" label="100" value="100"></el-option>
-                        <el-option key="4" label="500" value="500"></el-option>
-                        <el-option key="5" label="1k" value="1k"></el-option>
-                        <el-option key="6" label="5k" value="5k"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="指定阅读数量">
-                    <el-select v-model="readingNumber" class="handle-select mr10">
-                        <el-option key="1" label="不限" value="不限"></el-option>
-                        <el-option key="7" label="不允许阅读" value="不允许阅读"></el-option>
-                        <el-option key="2" label="100" value="100"></el-option>
-                        <el-option key="3" label="1k" value="1k"></el-option>
-                        <el-option key="4" label="5k" value="5k"></el-option>
-                        <el-option key="5" label="1w" value="1w"></el-option>
-                        <el-option key="6" label="5w" value="5w"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="指定收藏数量">
-                    <el-select v-model="readingNumber" class="handle-select mr10">
-                        <el-option key="1" label="不限" value="不限"></el-option>
-                        <el-option key="7" label="不允许收藏" value="不允许收藏"></el-option>
-                        <el-option key="2" label="10" value="10"></el-option>
-                        <el-option key="3" label="50" value="50"></el-option>
-                        <el-option key="4" label="100" value="100"></el-option>
-                        <el-option key="5" label="500" value="500"></el-option>
-                        <el-option key="6" label="1000" value="1000"></el-option>
-                    </el-select>
-                </el-form-item>
+        <el-dialog v-model="DialogFlag" :inline="true" @close="editFlag = false">
+            <el-form label-position="left" label-width="80px">
+                <el-row>
+                    <el-col :span="8">
+                        <el-form-item label="uid">
+                            {{ detailData?.id }}
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="用户名">
+                            {{ detailData?.name }}
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="帖子状态" v-if="editFlag === false">
+                            {{ detailData?.status === 1 ? '通过' : (detailData?.status === 0 ? '待审核' : (detailData?.status === 2 ? '不通过' : '' ))}}
+                        </el-form-item>
+                        <el-form-item label="帖子状态" v-if="editFlag === true">
+                            <el-select v-model="editData.status" style="width: 80%;">
+                                <el-option key="1" label="待审核" value="待审核" @click="editData.status = '待审核'"></el-option>
+                                <el-option key="2" label="已通过" value="已通过" @click="editData.status = '已通过'"></el-option>
+                                <el-option key="3" label="未通过" value="未通过" @click="editData.status = '未通过'"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="8">
+                        <el-form-item label="一级目录" v-if="editFlag=== false">
+                            {{ detailData?.category1 }}
+                        </el-form-item>
+                        <el-form-item label="一级目录" v-if="editFlag=== true">
+                            <el-input v-model="editData.category1" style="width: 80%"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="二级目录" v-if="editFlag=== false">
+                            {{ detailData?.category2 }}
+                        </el-form-item>
+                        <el-form-item label="二级目录" v-if="editFlag=== true">
+                            <el-input v-model="editData.category2" style="width: 80%"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="校区" v-if="editFlag=== false">
+                            {{ detailData?.campus }}
+                        </el-form-item>
+                        <el-form-item label="校区" v-if="editFlag=== true">
+                            <el-input v-model="editData.campus" style="width: 80%"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="8">
+                        <el-form-item label="发布时间">
+                            {{ detailData?.createtime }}
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="阅读量">
+                            {{ detailData?.readingnum }}
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="点赞量">
+                            {{ detailData?.likenum }}
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="8">
+                        <el-form-item label="收藏量">
+                            {{ detailData?.collectnum }}
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item label="标题" v-if="editFlag === false">
+                            {{ detailData?.title }}
+                        </el-form-item>
+                        <el-form-item label="标题" v-if="editFlag === true">
+                            <el-input v-model="editData.title" style="width: 80%"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24">
+                        <el-form-item label="帖文内容" v-if="editFlag === false">
+                            {{ detailData?.content }}
+                        </el-form-item>
+                        <el-form-item label="帖文内容" v-if="editFlag === true">
+                            <el-input   :rows="5" type="textarea" v-model="editData.content" style="width: 80%"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
             </el-form>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="editVisible = false">取 消</el-button>
-                    <el-button type="" @click="saveEdit">确 定</el-button>
-                </span>
-            </template>
+            <el-button v-if="editFlag === false" style="position: relative;left: 50%;transform: translateX(-50%);" @click="editFlag = true">编辑</el-button>
+            <el-button v-if="editFlag === true" style="position: relative;left: 33.3%;transform: translateX(-50%);" @click="submit">完成</el-button>
+            <el-button v-if="editFlag === true" style="position: relative;left: 66.6%;transform: translateX(-50%);" @click="editFlag = false">取消</el-button>
         </el-dialog>
     </div>
 </template>
 
 <script setup lang="ts" name="basetable">
 import { ref, reactive } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { Delete, Edit, Search, Plus, User, Refresh, SuccessFilled, CircleCloseFilled } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox, dialogEmits } from 'element-plus';
+import { Delete, Edit, Search, Plus, User, Refresh, SuccessFilled, CircleCloseFilled, Document, Clock } from '@element-plus/icons-vue';
 import { fetchTableData } from '../api/index';
 import txcRequest from '../service/index.js';
 import searchbar from '../components/searchbar.vue';
@@ -144,26 +211,29 @@ interface TableItem {
     id: number;              // 用户ID
     name: string;            // 用户名
     content: string;         // 帖子内容
-    status: string           // 帖子的状态(0为待审核，1为已通过，2为未通过)
+    status: number;           // 帖子的状态(0为待审核，1为已通过，2为未通过)
     category1: string;       // 一级目录
     category2: string;       // 二级目录
     picture: Array<string>;  // 图片url数组
     createtime: string;      // 发布时间
     campus: string;          // 在哪个校区
     title: string;           // 帖子的标题
-    likenum: number          // 被点赞的数量
-    collectnum: number       // 被收藏的数量
-    readingnum: number    // 阅读量
+    likenum: number;          // 被点赞的数量
+    collectnum: number;       // 被收藏的数量
+    readingnum: number;       // 阅读量
+    post_id: string;
 }
 
 const likeNumber = ref()
 const readingNumber = ref()
+const DialogFlag = ref(false);
+const queryStatus = ref("待审核");
+const editFlag = ref(false);
+const size = 25;
 
 const query = reactive({
-    address: '',
-    name: '',
     pageIndex: 1,
-    pageSize: 10,
+    pageSize: size,
     type: '',
     content: ''
 });
@@ -171,103 +241,193 @@ const query = reactive({
 
 const tableData = ref<Array<TableItem>>([]);
 const pageTotal = ref(0);
+const detailData = ref<TableItem>();
+
+let queryData = {
+    "campus": null,
+    "category1": null,
+    "category2": null,
+    "content": null,
+    "date": null,
+    "id": null,
+    "status": 0,
+    "title": null
+}
+
+const editData = reactive({
+    status: "",
+    content: "",
+    title: "",
+    campus: "",
+    category1: "",
+    category2: ""
+})
+
+const restQueryData = () => {
+    queryData.campus = null;
+    queryData.category1 = null;
+    queryData.category2 = null;
+    queryData.content = null;
+    queryData.date = null;
+    queryData.id = null;
+    queryData.status = 0;
+    queryData.title = null;
+}
+
+const modifyStatus = (status: number, row: any) => {
+    let pictureArray = row.picture;
+    console.log(pictureArray);
+    if(pictureArray[0] == ""){
+        pictureArray = [];
+    }
+    txcRequest.request({
+        url: 'manage/baike/alter',
+        method: 'PATCH',
+        data: {
+            status: status,
+            post_id: row.post_id,
+            category2: row.category2,
+            createtime: row.createtime,
+            campus: row.campus,
+            category1: row.category1,
+            collectnum: row.collectnum,
+            title:row.title,
+            content:row.content,
+            picture: pictureArray,
+            likenum: row.likenum,
+            name: row.name,
+            readingnum:row.readingnum,
+            id: row.id,
+        }
+    }).then((res: any) => {
+        pullPosts();
+        if (res.code) {
+
+        }
+    })
+}
+
+const getNewStatusPosts =(status: number) =>{
+    query.pageIndex = 1;
+    pullPosts();
+}
+
+const submit = ()=>{
+    let requestStatus = editData.status === '待审核'? 0 : (editData.status === '已通过'? 1:2); 
+    txcRequest.request({
+        url:'manage/baike/alter',
+        method: 'PATCH',
+        data: {
+            status: requestStatus,
+            post_id: detailData.value?.post_id,
+            category2: editData.category2,
+            createtime: detailData.value?.createtime,
+            campus: editData.campus,
+            category1: editData.category1,
+            collectnum: detailData.value?.collectnum,
+            title: editData.title,
+            content:editData.content,
+            picture: detailData.value?.picture,
+            notes: "",
+            likenum: detailData.value?.likenum,
+            name: detailData.value?.name,
+            readingnum:detailData.value?.readingnum,
+            id: detailData.value?.id
+        }
+
+    }).then((res:any)=>{
+        if(!res.code){
+            DialogFlag.value = false;
+            pullPosts();
+        }
+    })
+}
 
 /**
 * searchbar组件定义的事件
 * 根据用户提供关键词查找帖子
 */
-const performSearch = (query: {type: string, content: string})=>{
-    txcRequest.request({
-        url: 'baike/searchByKey',
-        method: 'GET',
-        params: {
-            type: query.type,
-            keyword: query.content,
-            pageSize: 1,
-            pageNum: 25,
-        }
-    }).then((res: any)=>{
-        console.log(query);
-        tableData.value =[];
-        tableData.value = res.data;
-    });
+const performSearch = () => {
+    query.pageIndex = 1;
+    pullPosts();
 }
+
 
 /**
  * 从后端获取新的帖子
  */
 
 const pullPosts = () => {
+    let requestStatus = queryStatus.value === '待审核'? 0 : (queryStatus.value === '已通过'? 1:2); 
     txcRequest.request({
-        url: 'baike/page',
-        method: 'GET',
+        url: 'manage/page/baike',
+        method: 'POST',
         params: {
-            pageNum: 1,
-            pageSize: 25
+            pageNum: query.pageIndex,
+            pageSize: size
+        },
+        data: {
+            campus: query.type === "校区" ? query.content: null,
+            category1: query.type === "一级目录" ? query.content: null,
+            category2: query.type === "二级目录" ? query.content: null,
+            content: query.type === "帖子内容" ? query.content: null,
+            date: query.type === "日期" ? query.content: null,
+            id: query.type === "用户id" ? query.content: null,
+            title: query.type === "标题" ? query.content: null,
+            status: requestStatus,
         }
-    }).then((res: any)=>{
-        tableData.value = res.data;
+    }).then((res: any) => {
+        if (!res.code) {
+            tableData.value = res.baike_result;
+            pageTotal.value = res.totalNum;
+            let i =0;
+            for(let item of tableData.value){
+                if(item.picture[0] === ""){
+                    tableData.value[i].picture = [];                   
+                }
+                i++;
+            }
+        }
     });
 }
 pullPosts();
 
-// 获取表格数据
-const getData = () => {
-    fetchTableData().then(res => {
-        tableData.value = res.data.list;
-        pageTotal.value = res.data.pageTotal || 50;
-    });
-};
+const resetSearch = () => {
+    query.pageIndex= 1;
+    query.pageSize= size;
+    query.type= '';
+    query.content= '';
+    pullPosts();
+}
 
-// 分页导航
 const handlePageChange = (val: number) => {
     query.pageIndex = val;
-    getData();
-};
+    pullPosts();
+}
 
-// 删除操作
-const handleDelete = (index: number) => {
-    // 二次确认删除
-    ElMessageBox.confirm('确定要删除吗？', '提示', {
-        type: 'warning'
-    })
-        .then(() => {
-            ElMessage.success('删除成功');
-            tableData.value.splice(index, 1);
-        })
-        .catch(() => { });
-};
-
-// 表格编辑时弹窗和保存
-const editVisible = ref(false);
-let form = reactive({
-    id: '',
-    content: ''
-});
-let idx: number = -1;
-const handleEdit = (index: number, row: any) => {
-    idx = index;
-    form.id = row.id;
-    form.content = row.content;
-    editVisible.value = true;
-};
-const saveEdit = () => {
-    editVisible.value = false;
-    ElMessage.success(`修改第 ${idx + 1} 行成功`);
-};
+const showMoreInfo = (row: any) => {
+    editFlag.value = false;
+    DialogFlag.value = true;
+    detailData.value = row;
+    editData.status = row.status === 0? "待审核" : ( row.status === 1? "已通过":"未通过"); 
+    editData.category1 = row.category1;
+    editData.category2 = row.category2;
+    editData.content = row.content;
+    editData.title = row.title;
+    editData.campus = row.campus;
+}
 </script>
 
 <style scoped>
 .handle-box {
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
 }
 
 .handle-select {
     width: 120px;
-}
-
-.handle-input {
-    width: 300px;
 }
 
 .table {
@@ -281,6 +441,10 @@ const saveEdit = () => {
 
 .green {
     color: #5cbf63
+}
+
+.blue {
+    color: rgb(63, 158, 255)
 }
 
 .mr10 {
@@ -317,8 +481,18 @@ const saveEdit = () => {
     text-align: center;
 }
 
+:deep(.el-form-item__label) {
+    font-weight: 600;
+}
+
+
 :deep() .el-popper {
     max-width: 40% !important;
 }
+.el-button+.el-button {
+    margin-left: 0px;
+}
+
+
 </style>
 

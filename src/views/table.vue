@@ -261,8 +261,4 @@ const Refuse = () => {
 	font-size: 14px;
 	margin-bottom: 20px;
 }
-
-.button {
-	margin-left: 20px;
-}
 </style>

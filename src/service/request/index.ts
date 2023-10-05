@@ -43,6 +43,7 @@ class TXCRequset {
 
     this.instance.interceptors.response.use(
       (res) => {
+        res.data.code = res.status === 200 ? 0: 1;
         const contentType = res.headers['content-type'];
         if (contentType && contentType.startsWith('application/octet-stream')) {
           return res; // 是照片请求，返回整个响应对象
