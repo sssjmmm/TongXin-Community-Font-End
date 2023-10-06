@@ -49,7 +49,7 @@
 									<Edit />
 								</el-icon>
 								<div class="grid-cont-right">
-									<div class="grid-num">14895</div>
+									<div class="grid-num">null</div>
 									<div>用户访问量</div>
 								</div>
 							</div>
@@ -62,7 +62,7 @@
 									<ChatDotRound />
 								</el-icon>
 								<div class="grid-cont-right">
-									<div class="grid-num">3521</div>
+									<div class="grid-num">{{AllPostCount}}</div>
 									<div>帖子总数</div>
 								</div>
 							</div>
@@ -184,6 +184,7 @@ export default {
   data() {
     return {
 	  manager_id: 1, // 管理员id，默认为1，之后需要从登录获得
+	  AllPostCount: null, // 帖子总数
 	  AllUserCount: null, // 用户总数
 	  imgurl: '../assets/img/img.jpg',
       name: localStorage.getItem('ms_username'),
@@ -252,11 +253,10 @@ export default {
 		console.log("start test!");
 		try {
 			console.log("start test2!");
-			await axios.get(`https://tongxinshequ.cn/manage/homepage/allTypesBaike`)
+			await axios.get(`https://tongxinshequ.cn/manage/baike/count`)
 			.then((response) => {
 				// 请求成功时的处理
-				this.category1Data = response.data.category1_result;
-				this.category2Data = response.data.category2_result;
+				console.log(response.data.post_count)
 			})
 			.catch((error) => {
 				// 请求失败时的处理
@@ -285,6 +285,20 @@ export default {
 		title: this.newTodo,
 		status: false
 		});
+
+		try {
+			axios.post(`https://tongxinshequ.cn/manage/homepage/addToDoList?manager_id=${this.manager_id}&title=${this.newTodo}`)
+			.then((response) => {
+				// 请求成功时的处理
+				console.log(response)
+			})
+			.catch((error) => {
+				// 请求失败时的处理
+				console.error('Error:', error);
+			});
+		} catch (error) {
+			this.error = error;
+      }
 
 	//发送给数据库
 	//...
@@ -323,6 +337,20 @@ export default {
 			await axios.get('https://tongxinshequ.cn/manage/homepage/getAllUserCount')
 			.then((response) => {
 				this.AllUserCount = response.data.totalUserNum;
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+		} catch (error) {
+			this.error = error;
+      }
+    },
+	// 获取帖子总量
+	async getAllPostCount() {
+		try {
+			await axios.get('https://tongxinshequ.cn/manage/baike/count')
+			.then((response) => {
+				this.AllPostCount = response.data.post_count;
 			})
 			.catch((error) => {
 				console.error('Error:', error);
@@ -397,6 +425,7 @@ export default {
 		await this.getToDoListData();
     	await this.updatePagedTodoList();
     	await this.getAllUserCount();
+    	await this.getAllPostCount();
 		await this.getCampusData();
 		await this.getCategoryData();
 	}
