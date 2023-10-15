@@ -171,7 +171,6 @@
 			</el-col>
 		</el-row>
 	</div>
-	<el-button @click="testData()">test</el-button>
 </template>
 
 <script>

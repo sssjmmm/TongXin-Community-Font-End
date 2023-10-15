@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHashHistory, RouteRecordRaw,createWebHistory } from 'vue-router';
 import { usePermissStore } from '../store/permiss';
 import Home from '../views/home.vue';
 
@@ -31,13 +31,13 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/table.vue'),
             },
             {
-                path: '/tag-mng-pg',
-                name: 'tagManagement',
+                path: '/post-mng-pg',
+                name: 'postManagement',
                 meta: {
                     title: '标签管理',
                     permiss: '20',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/TagManagementPage.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/PostManagementPage.vue'),
             },
             {
                 path: '/user-mng-pg',
@@ -87,7 +87,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes,
 });
 

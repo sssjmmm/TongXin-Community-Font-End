@@ -34,7 +34,7 @@
 <script setup lang="ts" name="basetable">
 import { ref, reactive } from 'vue';
 import { ElMessage, ElMessageBox, dialogEmits } from 'element-plus';
-import { Delete, Edit, Search, Plus, User, Refresh, SuccessFilled, CircleCloseFilled } from '@element-plus/icons-vue';
+import { Delete, Edit, Search, Plus, User, Refresh, SuccessFilled, CircleCloseFilled,Clock } from '@element-plus/icons-vue';
 import { fetchTableData } from '../api/index';
 import txcRequest from '../service/index.js';
 import searchuser from '../components/searchuser.vue';

@@ -10,7 +10,7 @@
             unique-opened
             router
         >
-            <template v-for="item in items">
+            <!-- <template v-for="item in items">
                 <template v-if="item.subs">
                     <el-sub-menu :index="item.index" :key="item.index" v-permiss="item.permiss">
                         <template #title>
@@ -36,19 +36,19 @@
                             </el-menu-item>
                         </template>
                     </el-sub-menu>
-                </template>
-                <template v-else>
-                    <el-menu-item :index="item.index" :key="item.index" v-permiss="item.permiss">
+                </template> -->
+                <template v-for="item in items">
+                    <el-menu-item :index="item.index" v-permiss="item.permiss">
                         <el-icon>
                             <component :is="item.icon"></component>
                         </el-icon>
                         <template #title>{{ item.title }}</template>
                     </el-menu-item>
                 </template>
-            </template>
+            <!-- </template> -->
         </el-menu>
     </div>
-</template>
+</template>ser
 
 <script setup lang="ts">
 import { computed } from 'vue';
@@ -63,26 +63,13 @@ const items = [
         permiss: '1',
     },
     {
-        icon: 'Edit',
-        index: '3',
-        title: '表单相关',
-        permiss: '4',
-        subs: [
-            {
-                index: '/form',
-                title: '编辑帖子',
-                permiss: '5',
-            },
-        ],
-    },
-    {
         icon:'Postcard',
-        index: '/tag-mng-pg',
+        index: '/post-mng-pg',
         title: '帖子管理',
         permiss: '13'
     },
     {
-        icon: 'Postcard',
+        icon: 'User',
         index: '/user-mng-pg',
         title: '用户管理',
         permiss: '13'
