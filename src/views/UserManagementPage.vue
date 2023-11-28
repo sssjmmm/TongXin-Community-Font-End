@@ -103,10 +103,11 @@ const pullUsers = () => {
             pageNum: query.pageIndex,
             pageSize: size
         },
-        data: {
-            uid: query.type === "用户uid" ? query.content: null,
-            username: query.type === "用户名" ? query.content: null,
-        }
+        data: query.type === "用户uid"? {uid: query.content} : (query.type === "用户名" ? {username: query.content} : {})
+        //data: {
+          //  uid: query.type === "用户uid" ? query.content: null,
+           // username: query.type === "用户名" ? query.content: null,
+        //}
     }).then((res: any)=>{
         if (!res.code) {
             tableData.value = res.user_result;
