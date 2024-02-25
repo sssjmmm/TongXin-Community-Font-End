@@ -49,6 +49,15 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "table" */ '../views/UserManagementPage.vue'),
             },
             {
+                path: '/post-category',
+                name: 'categoryManagement',
+                meta: {
+                    title: '类别管理',
+                    permiss: '20',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/categoryManagementPage.vue'),
+            },
+            {
                 path: '/form',
                 name: 'baseform',
                 meta: {

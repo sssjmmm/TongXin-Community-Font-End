@@ -73,7 +73,13 @@ const items = [
         index: '/user-mng-pg',
         title: '用户管理',
         permiss: '13'
-    }
+    },
+    {
+        icon: 'User',
+        index: '/post-category',
+        title: '类别管理',
+        permiss: '13'
+    },
 ];
 
 const route = useRoute();
