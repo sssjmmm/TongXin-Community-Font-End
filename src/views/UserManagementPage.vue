@@ -14,12 +14,20 @@
             
             <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
                 <el-table-column prop="uid" label="UID" width="100" align="center"></el-table-column>
-                <el-table-column prop="username" width="150" label="用户名" align="center"></el-table-column>
+                <el-table-column prop="username" width="200" label="用户名" align="center"></el-table-column>
                 <el-table-column prop="campus" label="学校" align="center"></el-table-column>
-                <el-table-column prop="followednum" label="粉丝数量" align="center"></el-table-column>
+                <el-table-column prop="followednum" label="粉丝数量" width="120" align="center"></el-table-column>
                 <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
                 <el-table-column prop="info" label="登录信息" width="200" align="center"
                     :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="status" label="操作" width="120" align="center">
+                    <template #default="scope">
+                        <el-button class="red" :icon="CircleCloseFilled" text
+                            @click="removeUserByUid(scope.row.uid)" style="margin-left: 0;">
+                            注销
+                        </el-button>
+                    </template>
+                </el-table-column>
             </el-table>
 
             <div class="pagination">
@@ -118,6 +126,26 @@ const pullUsers = () => {
 }
 
 pullUsers();
+
+
+/*
+* 根据uid删除用户
+*/
+
+const removeUserByUid = (uid: BigInteger) => {
+    txcRequest.request({
+        url: 'manage/user/delete',
+        method: 'DELETE',
+        params: {
+            uid: uid
+        },
+    }).then((res: any)=>{
+        if (!res.code) {
+            console.log("用户删除成功");
+            alert("UID为" + uid + "的用户注销成功");
+        }
+    });
+}
 
 
 const resetSearch = () => {
